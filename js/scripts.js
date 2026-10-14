@@ -1,51 +1,19 @@
-/*!
- * Start Bootstrap - Agency v7.0.6 (https://startbootstrap.com/theme/agency)
- * Copyright 2013-2021 Start Bootstrap
- * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-agency/blob/master/LICENSE)
- */
-//
-// Scripts
-//
-
-window.addEventListener("DOMContentLoaded", event => {
-  // Navbar shrink function
-  var navbarShrink = function () {
-    const navbarCollapsible = document.body.querySelector("#mainNav");
-    if (!navbarCollapsible) {
-      return;
-    }
-    if (window.scrollY === 0) {
-      navbarCollapsible.classList.remove("navbar-shrink");
-    } else {
-      navbarCollapsible.classList.add("navbar-shrink");
-    }
-  };
-
-  // Shrink the navbar
-  navbarShrink();
-
-  // Shrink the navbar when page is scrolled
-  document.addEventListener("scroll", navbarShrink);
-
-  // Activate Bootstrap scrollspy on the main nav element
-  const mainNav = document.body.querySelector("#mainNav");
-  if (mainNav) {
-    new bootstrap.ScrollSpy(document.body, {
-      target: "#mainNav",
-      offset: 74
-    });
-  }
-
-  // Collapse responsive navbar when toggler is visible
-  const navbarToggler = document.body.querySelector(".navbar-toggler");
-  const responsiveNavItems = [].slice.call(
-    document.querySelectorAll("#navbarResponsive .nav-link")
-  );
-  responsiveNavItems.map(function (responsiveNavItem) {
-    responsiveNavItem.addEventListener("click", () => {
-      if (window.getComputedStyle(navbarToggler).display !== "none") {
-        navbarToggler.click();
-      }
-    });
-  });
-});
+'use strict';
+const nav = document.querySelector('#mainNav');
+const toggle = document.querySelector('.navbar-toggler');
+const menu = document.querySelector('#navbarResponsive');
+const links = [...document.querySelectorAll('.nav-link')];
+function closeMenu() { menu.classList.remove('show'); toggle.setAttribute('aria-expanded', 'false'); }
+toggle.addEventListener('click', () => { const open = menu.classList.toggle('show'); toggle.setAttribute('aria-expanded', String(open)); });
+links.forEach(link => link.addEventListener('click', closeMenu));
+document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu.classList.contains('show')) { closeMenu(); toggle.focus(); } });
+window.addEventListener('resize', () => { if (window.innerWidth > 640) closeMenu(); });
+function updateNav() {
+  nav.classList.toggle('navbar-shrink', window.scrollY > 24);
+  let current = '#page-top';
+  ['services', 'about'].forEach(id => { if (document.getElementById(id).getBoundingClientRect().top <= 150) current = '#' + id; });
+  links.forEach(link => { const active = link.getAttribute('href') === current; link.classList.toggle('active', active); if (active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current'); });
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+document.getElementById('copyright-year').textContent = new Date().getFullYear();
